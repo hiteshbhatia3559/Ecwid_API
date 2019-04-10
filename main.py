@@ -47,11 +47,15 @@ if __name__ == "__main__":
             url = 'https://app.ecwid.com/api/v3/{}/products?offset={}&limit=100&token={}'.format(store_id,page,access_token)
             response = requests.get(url).json()
             pages.append(response)
+    a = ""
     items = []
     for page in pages:
         for item in page['items']:
-            items.append(item)
+            try:
+                a = item['quantity']
+                items.append(item)
+            except:
+                pass
+
     for item in items:
-        if 'quantity' not in item.keys():
-            items.remove(item)
-    print(len(items))
+        print(len(item.keys())) # numbers are different... dont know why
