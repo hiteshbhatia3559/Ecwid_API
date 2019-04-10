@@ -41,6 +41,6 @@ if __name__ == "__main__":
     client_secret = 'Gh9FXunMCPc5E2yPn8Rl9czLWwfsVSoH'
     store_id = 15833734
     access_token = get_access_token(client_id,client_secret,code)['access_token']
-    url = 'https://app.ecwid.com/api/v3/{}/profile?token={}'.format(store_id,access_token)
+    url = 'https://app.ecwid.com/api/v3/{}/products?limit=1000&token={}'.format(store_id,access_token)
     response = requests.get(url).json()
-    print(response.keys())
+    print(response)
