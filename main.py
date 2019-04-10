@@ -32,7 +32,7 @@ def get_access_token(client_id, client_secret,code):
     url = 'https://my.ecwid.com/api/oauth/token?client_id={}&client_secret={}&code={}&redirect_uri=http://127.0.0.1&grant_type=authorization_code'.format(
         client_id, client_secret, code)
     response = requests.get(url)
-    # print(response.text)
+    print(response.text)
     return literal_eval(response.text)
 
 if __name__ == "__main__":
@@ -41,6 +41,17 @@ if __name__ == "__main__":
     client_secret = 'Gh9FXunMCPc5E2yPn8Rl9czLWwfsVSoH'
     store_id = 15833734
     access_token = get_access_token(client_id,client_secret,code)['access_token']
-    url = 'https://app.ecwid.com/api/v3/{}/products?limit=1000&token={}'.format(store_id,access_token)
-    response = requests.get(url).json()
-    print(response)
+    pages = []
+    with open("data.txt","w+") as writefile:
+        for page in range(0,11):
+            url = 'https://app.ecwid.com/api/v3/{}/products?offset={}&limit=100&token={}'.format(store_id,page,access_token)
+            response = requests.get(url).json()
+            pages.append(response)
+    items = []
+    for page in pages:
+        for item in page['items']:
+            items.append(item)
+    for item in items:
+        if 'quantity' not in item.keys():
+            items.remove(item)
+    print(len(items))
