@@ -6,10 +6,11 @@ from selenium.webdriver import ChromeOptions, Chrome
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.chrome.options import Options
 import socket
 import csv
 import requests
-
+from ast import literal_eval
 
 def openurl_function(username, password):
     driver = webdriver.Chrome('./chromedriver.exe')
@@ -21,14 +22,25 @@ def openurl_function(username, password):
     driver.find_element_by_name("password").click()
     driver.find_element_by_name("password").send_keys(password)
     driver.find_element_by_id("SIF.sIB").click()
-    sleep(100)
+    sleep(3)
     url = driver.current_url
     code = url.split("=")
     driver.quit()
     return code[1]
 
+def get_access_token(client_id, client_secret,code):
+    url = 'https://my.ecwid.com/api/oauth/token?client_id={}&client_secret={}&code={}&redirect_uri=http://127.0.0.1&grant_type=authorization_code'.format(
+        client_id, client_secret, code)
+    response = requests.get(url)
+    # print(response.text)
+    return literal_eval(response.text)
 
 if __name__ == "__main__":
-    url = "https://app.ecwid.com/api/v3/16941237/profile?token=secret_pcVAYggLXsRg36DKNiHxNgze8aB2BBui"
-    response = requests.get(url)
-    print(openurl_function(username="web@avantgardegifts.co.uk", password="P^7!RklE&kthjo2@j1fC"))
+    code = openurl_function(username="web@avantgardegifts.co.uk", password="P^7!RklE&kthjo2@j1fC")
+    client_id = 'custom-app-avantgardegifts'
+    client_secret = 'Gh9FXunMCPc5E2yPn8Rl9czLWwfsVSoH'
+    store_id = 15833734
+    access_token = get_access_token(client_id,client_secret,code)['access_token']
+    url = 'https://app.ecwid.com/api/v3/{}/profile?token={}'.format(store_id,access_token)
+    response = requests.get(url).json()
+    print(response.keys())
